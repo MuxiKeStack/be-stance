@@ -4,22 +4,26 @@ import (
 	"context"
 	stancev1 "github.com/MuxiKeStack/be-api/gen/proto/stance/v1"
 	"github.com/MuxiKeStack/be-stance/domain"
+	"github.com/MuxiKeStack/be-stance/repository"
 )
 
 type StanceService interface {
-	Endorse(ctx context.Context, uid int64, biz stancev1.Biz, bizId int64, stance stancev1.Stance) error
+	Endorse(ctx context.Context, ubs domain.UserBizStance) error
 	GetUserStance(ctx context.Context, uid int64, biz stancev1.Biz, bizId int64) (domain.UserBizStance, error)
 }
 
 type stanceService struct {
+	repo repository.StanceRepository
 }
 
-func (s *stanceService) Endorse(ctx context.Context, uid int64, biz stancev1.Biz, bizId int64, stance stancev1.Stance) error {
-	//TODO implement me
-	panic("implement me")
+func NewStanceService(repo repository.StanceRepository) StanceService {
+	return &stanceService{repo: repo}
+}
+
+func (s *stanceService) Endorse(ctx context.Context, ubs domain.UserBizStance) error {
+	return s.repo.Endorse(ctx, ubs)
 }
 
 func (s *stanceService) GetUserStance(ctx context.Context, uid int64, biz stancev1.Biz, bizId int64) (domain.UserBizStance, error) {
-	//TODO implement me
-	panic("implement me")
+	return s.repo.GetUserBizStance(ctx, uid, biz, bizId)
 }

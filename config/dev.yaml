@@ -1,0 +1,16 @@
+mysql:
+  dsn: "root:root@tcp(localhost:3306)/kstack"
+
+redis:
+  addr: "localhost:6379"
+
+etcd:
+  endpoints:
+    - "localhost:12379"
+
+grpc:
+  server:
+    name: "stance"
+    weight: 100
+    addr: ":8099"
+    etcdTTL: 60
