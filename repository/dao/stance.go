@@ -88,6 +88,8 @@ func (dao *GORMStanceDAO) Upsert(ctx context.Context, userBizStance UserBizStanc
 				BizId:      userBizStance.BizId,
 				SupportCnt: increment.Support,
 				OpposeCnt:  increment.Oppose,
+				Utime:      now,
+				Ctime:      now,
 			}).Error
 		default:
 			return err
