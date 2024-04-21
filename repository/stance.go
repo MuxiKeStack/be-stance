@@ -42,7 +42,7 @@ func (repo *CachedStanceRepository) GetUserBizStance(ctx context.Context, uid in
 	if err != nil {
 		// 不区分redis是否崩了，直接去数据库拿
 		bsc, er := repo.dao.GetBizStanceCount(ctx, int32(biz), bizId)
-		if er != nil && err != dao.ErrRecordNotFound {
+		if er != nil && er != dao.ErrRecordNotFound {
 			return domain.UserBizStance{}, er
 		}
 		ubs.SupportCnt = bsc.SupportCnt
@@ -67,7 +67,7 @@ func (repo *CachedStanceRepository) GetUserBizStance(ctx context.Context, uid in
 	ubs.Stance = stancev1.Stance(daoUbs.Stance)
 	ubs.Biz = biz
 	ubs.BizId = bizId
-	return ubs, err
+	return ubs, nil
 }
 
 func (repo *CachedStanceRepository) toEntity(ubs domain.UserBizStance) dao.UserBizStance {
