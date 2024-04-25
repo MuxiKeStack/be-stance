@@ -39,3 +39,11 @@ func (s *StanceServiceServer) GetUserStance(ctx context.Context, request *stance
 		TotalOpposes:  stance.OpposeCnt,
 	}, err
 }
+
+func (s *StanceServiceServer) CountStance(ctx context.Context, request *stancev1.CountStanceRequest) (*stancev1.CountStanceResponse, error) {
+	counts, err := s.svc.CountStance(ctx, request.GetBiz(), request.GetBizId())
+	return &stancev1.CountStanceResponse{
+		TotalSupports: counts.SupportCnt,
+		TotalOpposes:  counts.OpposeCnt,
+	}, err
+}

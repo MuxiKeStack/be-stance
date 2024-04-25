@@ -12,6 +12,7 @@ import (
 type StanceRepository interface {
 	Endorse(ctx context.Context, ubs domain.UserBizStance) error
 	GetUserBizStance(ctx context.Context, uid int64, biz stancev1.Biz, bizId int64) (domain.UserBizStance, error)
+	CountStance(ctx context.Context, biz stancev1.Biz, bizId int64) (domain.UserBizStance, error)
 }
 
 type CachedStanceRepository struct {
@@ -67,6 +68,31 @@ func (repo *CachedStanceRepository) GetUserBizStance(ctx context.Context, uid in
 	ubs.Stance = stancev1.Stance(daoUbs.Stance)
 	ubs.Biz = biz
 	ubs.BizId = bizId
+	return ubs, nil
+}
+
+func (repo *CachedStanceRepository) CountStance(ctx context.Context, biz stancev1.Biz, bizId int64) (domain.UserBizStance, error) {
+	ubs, err := repo.cache.GetBizStanceCount(ctx, int32(biz), bizId)
+	if err == nil {
+		// 不区分redis是否崩了，直接去数据库拿
+		return ubs, nil
+	}
+	bsc, er := repo.dao.GetBizStanceCount(ctx, int32(biz), bizId)
+	if er != nil && er != dao.ErrRecordNotFound {
+		return domain.UserBizStance{}, er
+	}
+	ubs.SupportCnt = bsc.SupportCnt
+	ubs.OpposeCnt = bsc.OpposeCnt
+	go func() {
+		// 回写数量缓存
+		er := repo.cache.SetBizStanceCount(ctx, int32(biz), bizId, ubs)
+		if er != nil {
+			repo.l.Error("回写Stance Count缓存失败",
+				logger.Error(err),
+				logger.String("biz", biz.String()),
+				logger.Int64("bizId", bizId))
+		}
+	}()
 	return ubs, nil
 }
 

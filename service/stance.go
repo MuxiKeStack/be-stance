@@ -10,10 +10,15 @@ import (
 type StanceService interface {
 	Endorse(ctx context.Context, ubs domain.UserBizStance) error
 	GetUserStance(ctx context.Context, uid int64, biz stancev1.Biz, bizId int64) (domain.UserBizStance, error)
+	CountStance(ctx context.Context, biz stancev1.Biz, bizId int64) (domain.UserBizStance, error)
 }
 
 type stanceService struct {
 	repo repository.StanceRepository
+}
+
+func (s *stanceService) CountStance(ctx context.Context, biz stancev1.Biz, bizId int64) (domain.UserBizStance, error) {
+	return s.repo.CountStance(ctx, biz, bizId)
 }
 
 func NewStanceService(repo repository.StanceRepository) StanceService {
