@@ -61,7 +61,6 @@ func (s *stanceService) Endorse(ctx context.Context, ubs domain.UserBizStance) e
 			getter, ok := s.uidGetters[ubs.Biz]
 			if !ok {
 				s.l.Error("biz getter不存在",
-					logger.Error(err),
 					logger.String("biz", ubs.Biz.String()),
 					logger.Int64("bizId", ubs.BizId))
 				return
@@ -71,7 +70,7 @@ func (s *stanceService) Endorse(ctx context.Context, ubs domain.UserBizStance) e
 			supported, er := getter.GetUID(ctx, ubs.BizId)
 			if er != nil {
 				s.l.Error("被支持的biz不合法",
-					logger.Error(err),
+					logger.Error(er),
 					logger.String("biz", ubs.Biz.String()),
 					logger.Int64("bizId", ubs.BizId))
 				return
@@ -87,7 +86,7 @@ func (s *stanceService) Endorse(ctx context.Context, ubs domain.UserBizStance) e
 			})
 			if er != nil {
 				s.l.Error("发送支持事件失败",
-					logger.Error(err),
+					logger.Error(er),
 					logger.String("biz", ubs.Biz.String()),
 					logger.Int64("bizId", ubs.BizId),
 					logger.Int64("supporter", ubs.Uid),
