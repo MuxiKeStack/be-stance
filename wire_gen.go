@@ -25,9 +25,13 @@ func InitGRPCServer() grpcx.Server {
 	cmdable := ioc.InitRedis()
 	stanceCache := cache.NewRedisStanceCache(cmdable)
 	stanceRepository := repository.NewCachedStanceRepository(stanceDAO, stanceCache, logger)
-	stanceService := service.NewStanceService(stanceRepository)
+	client := ioc.InitKafka()
+	producer := ioc.InitProducer(client)
+	clientv3Client := ioc.InitEtcdClient()
+	evaluationServiceClient := ioc.InitEvaluationClient(clientv3Client)
+	answerServiceClient := ioc.InitAnswerClient(clientv3Client)
+	stanceService := service.NewStanceService(stanceRepository, producer, evaluationServiceClient, answerServiceClient, logger)
 	stanceServiceServer := grpc.NewStanceServiceServer(stanceService)
-	client := ioc.InitEtcdClient()
-	server := ioc.InitGRPCxKratosServer(stanceServiceServer, client, logger)
+	server := ioc.InitGRPCxKratosServer(stanceServiceServer, clientv3Client, logger)
 	return server
 }

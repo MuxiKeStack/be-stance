@@ -18,8 +18,14 @@ func InitGRPCServer() grpcx.Server {
 		ioc.InitGRPCxKratosServer,
 		grpc.NewStanceServiceServer,
 		service.NewStanceService,
+		// producer
+		ioc.InitProducer,
+		// rpc client
+		ioc.InitAnswerClient, ioc.InitEvaluationClient,
 		repository.NewCachedStanceRepository,
 		dao.NewGORMStanceDAO, cache.NewRedisStanceCache,
+		// 第三方
+		ioc.InitKafka,
 		ioc.InitDB, ioc.InitRedis,
 		ioc.InitEtcdClient,
 		ioc.InitLogger,
