@@ -11,6 +11,7 @@ import (
 	"github.com/MuxiKeStack/be-stance/pkg/logger"
 	"github.com/MuxiKeStack/be-stance/repository"
 	"strconv"
+	"time"
 )
 
 type StanceService interface {
@@ -65,6 +66,8 @@ func (s *stanceService) Endorse(ctx context.Context, ubs domain.UserBizStance) e
 					logger.Int64("bizId", ubs.BizId))
 				return
 			}
+			ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
+			defer cancel()
 			supported, er := getter.GetUID(ctx, ubs.BizId)
 			if er != nil {
 				s.l.Error("被支持的biz不合法",
