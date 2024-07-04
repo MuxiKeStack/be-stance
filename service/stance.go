@@ -49,7 +49,9 @@ func (s *stanceService) Endorse(ctx context.Context, ubs domain.UserBizStance) e
 	if err != nil {
 		return err
 	}
-
+	// TODO 有很明显的步骤，可以采用责任链模式，但是目前就两步，真没必要
+	// 责任链倾向于同步调用，事件驱动和责任链很像，但是倾向于异步调用，区别在于每一步的执行都是被上一步的消息驱动的，
+	// 也就是每一步执行之后都会向下一步的topic里发消息，
 	if ubs.Stance == stancev1.Stance_Support {
 		// 发送一条支持事件
 		go func() {
